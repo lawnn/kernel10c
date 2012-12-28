@@ -48,6 +48,7 @@ config ARCH_MSM7X30
 	select CPU_V7
 	select GPIO_MSM_V1
 	select MSM_REMOTE_SPINLOCK_DEKKERS
+	select ARCH_SPARSEMEM_ENABLE
 	select ARCH_HAS_HOLES_MEMORYMODEL
 	select MIGRATION
 	select MSM_GPIOMUX
@@ -1907,17 +1908,11 @@ config MSM_CPU_FREQ_MIN
 
 endif # CPU_FREQ_MSM
 
-config CPU_VOLTAGE_TABLE
-	bool "Enable CPU Voltage Table via sysfs for adjustements"
+config INTELLI_PLUG
+	bool "Enable intelli-plug cpu hotplug driver"
 	default n
 	help
-	  Krait User Votlage Control
-
-config ALUCARD_HOTPLUG
-	bool "Enable alucard-hotplug cpu hotplug driver"
-	default n
-	help
-	  Generic Alucard-hotplug cpu hotplug driver for ARM SOCs
+	  Generic Intelli-plug cpu hotplug driver for ARM SOCs
 
 config MSM_AVS_HW
 	bool "Enable Adaptive Voltage Scaling (AVS)"
@@ -2618,7 +2613,7 @@ config MSM_AUDIO_QDSP6V2
 config MSM_ADSP_LOADER
         tristate "ADSP loader support"
         select SND_SOC_MSM_APRV2_INTF
-	depends on MSM_AUDIO_QDSP6V2 && m
+	depends on MSM_AUDIO_QDSP6V2
         help
           Enable ADSP image loader.
 	  The ADSP loader brings ADSP out of reset
@@ -3061,5 +3056,12 @@ config WALL_CLK_SYSFS
 	help
 	 Support the wallclk directory in sysfs filesystem to enable the
 	 wall clock simulation and read the current SFN.
+
+config FORCE_FAST_CHARGE
+	bool "Force AC charge mode at will"
+	default y
+	help
+	  A simple sysfs interface to force adapters that
+	  are detected as USB to charge as AC.
 
 endif
