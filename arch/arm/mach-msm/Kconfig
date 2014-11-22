@@ -48,7 +48,6 @@ config ARCH_MSM7X30
 	select CPU_V7
 	select GPIO_MSM_V1
 	select MSM_REMOTE_SPINLOCK_DEKKERS
-	select ARCH_SPARSEMEM_ENABLE
 	select ARCH_HAS_HOLES_MEMORYMODEL
 	select MIGRATION
 	select MSM_GPIOMUX
@@ -1907,6 +1906,18 @@ config MSM_CPU_FREQ_MIN
 	default 245760
 
 endif # CPU_FREQ_MSM
+
+config CPU_VOLTAGE_TABLE
+	bool "Enable CPU Voltage Table via sysfs for adjustements"
+	default n
+	help
+	  Krait User Votlage Control
+
+config ALUCARD_HOTPLUG
+	bool "Enable alucard-hotplug cpu hotplug driver"
+	default n
+	help
+	  Generic Alucard-hotplug cpu hotplug driver for ARM SOCs
 
 config MSM_AVS_HW
 	bool "Enable Adaptive Voltage Scaling (AVS)"

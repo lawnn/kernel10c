@@ -118,12 +118,12 @@ static void __disable_clocks(struct msm_iommu_drvdata *drvdata)
 	clk_disable_unprepare(drvdata->pclk);
 }
 
-static void _iommu_lock_acquire(void)
+static void _iommu_lock_acquire(unsigned int need_extra_lock)
 {
 	mutex_lock(&msm_iommu_lock);
 }
 
-static void _iommu_lock_release(void)
+static void _iommu_lock_release(unsigned int need_extra_lock)
 {
 	mutex_unlock(&msm_iommu_lock);
 }
@@ -137,7 +137,6 @@ struct iommu_access_ops iommu_access_ops_v1 = {
 	.iommu_lock_acquire = _iommu_lock_acquire,
 	.iommu_lock_release = _iommu_lock_release,
 };
-EXPORT_SYMBOL(iommu_access_ops_v1);
 
 void iommu_halt(const struct msm_iommu_drvdata *iommu_drvdata)
 {

@@ -125,9 +125,9 @@ int kcal_set_values(int kcal_r, int kcal_g, int kcal_b)
 #if defined(CONFIG_MACH_MSM8974_A1)
 		int isUpdate = 0;
 
-		int kcal_r_limit = 250;
-		int kcal_g_limit = 250;
-		int kcal_b_limit = 253;
+		int kcal_r_limit = 0;
+		int kcal_g_limit = 0;
+		int kcal_b_limit = 0;
 
 		g_kcal_r = kcal_r < kcal_r_limit ? kcal_r_limit : kcal_r;
 		g_kcal_g = kcal_g < kcal_g_limit ? kcal_g_limit : kcal_g;
@@ -204,7 +204,11 @@ void __init msm8974_add_drivers(void)
 	else
 		msm_clock_init(&msm8974_clock_init_data);
 	tsens_tm_init_driver();
+#ifdef CONFIG_INTELLI_THERMAL
+	msm_thermal_init(NULL);
+#else
 	msm_thermal_device_init();
+#endif
 #ifdef CONFIG_LGE_LCD_TUNING
 	lge_add_lcd_misc_devices();
 #endif
