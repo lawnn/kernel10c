@@ -613,6 +613,9 @@ static char * const migratetype_names[MIGRATE_TYPES] = {
 	"Reclaimable",
 	"Movable",
 	"Reserve",
+#ifdef CONFIG_CMA
+	"CMA",
+#endif
 	"Isolate",
 };
 
@@ -709,6 +712,13 @@ const char * const vmstat_text[] = {
 	"nr_shmem",
 	"nr_dirtied",
 	"nr_written",
+#ifdef CONFIG_LGE_MEMORY_INFO
+	"nr_vmalloc",
+	"nr_binder",
+	"nr_kgsl",
+	"nr_ion",
+	"nr_iommu",
+#endif
 
 #ifdef CONFIG_NUMA
 	"numa_hit",
@@ -719,6 +729,7 @@ const char * const vmstat_text[] = {
 	"numa_other",
 #endif
 	"nr_anon_transparent_hugepages",
+	"nr_free_cma",
 	"nr_dirty_threshold",
 	"nr_dirty_background_threshold",
 

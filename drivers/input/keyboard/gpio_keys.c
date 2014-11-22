@@ -335,6 +335,9 @@ static void gpio_keys_gpio_report_event(struct gpio_button_data *bdata)
 		if (state)
 			input_event(input, type, button->code, button->value);
 	} else {
+#if defined CONFIG_MACH_MSM8974_VU3_KR
+		printk("[SDK] Report Key %d, %s\n", button->code, (!!state)?"pressed":"released");
+#endif
 		input_event(input, type, button->code, !!state);
 	}
 	input_sync(input);
@@ -557,6 +560,7 @@ static int gpio_keys_get_devtree_pdata(struct device *dev,
 	memset(pdata, 0, sizeof *pdata);
 
 	pdata->rep = !!of_get_property(node, "autorepeat", NULL);
+	pdata->name = of_get_property(node, "input-name", NULL);
 
 	/* First count the subnodes */
 	pdata->nbuttons = 0;

@@ -1446,7 +1446,7 @@ static int unix_dgram_sendmsg(struct kiocb *kiocb, struct socket *sock,
 	if (NULL == siocb->scm)
 		siocb->scm = &tmp_scm;
 	wait_for_unix_gc();
-	err = scm_send(sock, msg, siocb->scm);
+	err = scm_send(sock, msg, siocb->scm, false);
 	if (err < 0)
 		return err;
 
@@ -1607,7 +1607,7 @@ static int unix_stream_sendmsg(struct kiocb *kiocb, struct socket *sock,
 	if (NULL == siocb->scm)
 		siocb->scm = &tmp_scm;
 	wait_for_unix_gc();
-	err = scm_send(sock, msg, siocb->scm);
+	err = scm_send(sock, msg, siocb->scm, false);
 	if (err < 0)
 		return err;
 
@@ -1794,6 +1794,10 @@ static int unix_dgram_recvmsg(struct kiocb *iocb, struct socket *sock,
 	wake_up_interruptible_sync_poll(&u->peer_wait,
 					POLLOUT | POLLWRNORM | POLLWRBAND);
 
+	if (ccs_socket_post_recvmsg_permission(sk, skb, flags)) {
+		err = -EAGAIN; /* Hope less harmful than -EPERM. */
+		goto out_unlock;
+	}
 	if (msg->msg_name)
 		unix_copy_addr(msg, skb->sk);
 

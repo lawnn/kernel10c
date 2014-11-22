@@ -23,7 +23,14 @@
 
 /* Fixed constants first: */
 #undef NR_OPEN
+/*
+ * increase INR_OPEN_CUR to 2048
+ */
+#ifdef CONFIG_MACH_LGE
+#define INR_OPEN_CUR 2048	/* Initial setting for nfile rlimits */
+#else
 #define INR_OPEN_CUR 1024	/* Initial setting for nfile rlimits */
+#endif
 #define INR_OPEN_MAX 4096	/* Hard limit for nfile rlimits */
 
 #define BLOCK_SIZE_BITS 10
@@ -324,6 +331,7 @@ struct inodes_stat_t {
 #define BLKDISCARDZEROES _IO(0x12,124)
 #define BLKSECDISCARD _IO(0x12,125)
 #define BLKROTATIONAL _IO(0x12,126)
+#define BLKSANITIZE _IO(0x12, 127)
 
 #define BMAP_IOCTL 1		/* obsolete - kept for compatibility */
 #define FIBMAP	   _IO(0x00,1)	/* bmap access */

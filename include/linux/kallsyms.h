@@ -33,9 +33,14 @@ const char *kallsyms_lookup(unsigned long addr,
 			    unsigned long *symbolsize,
 			    unsigned long *offset,
 			    char **modname, char *namebuf);
+const char *kallsyms_line_loc_lookup(unsigned long addr,
+			    unsigned long *symbolsize,
+			    unsigned long *offset,
+			    char **modname, char *namebuf);
 
 /* Look up a kernel symbol and return it in a text buffer. */
 extern int sprint_symbol(char *buffer, unsigned long address);
+extern int sprint_symbol_no_offset(char *buffer, unsigned long address);
 extern int sprint_backtrace(char *buffer, unsigned long address);
 
 /* Look up a kernel symbol and print it to the kernel messages. */
@@ -73,8 +78,22 @@ static inline const char *kallsyms_lookup(unsigned long addr,
 {
 	return NULL;
 }
+static inline const char *kallsyms_line_loc_lookup(unsigned long addr,
+					  unsigned long *symbolsize,
+					  unsigned long *offset,
+					  char **modname, char *namebuf)
+{
+	return NULL;
+}
+
 
 static inline int sprint_symbol(char *buffer, unsigned long addr)
+{
+	*buffer = '\0';
+	return 0;
+}
+
+static inline int sprint_symbol_no_offset(char *buffer, unsigned long addr)
 {
 	*buffer = '\0';
 	return 0;
