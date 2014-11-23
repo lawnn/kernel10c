@@ -109,6 +109,7 @@
 #include <net/rtnetlink.h>
 #ifdef CONFIG_SYSCTL
 #include <linux/sysctl.h>
+#include <linux/kmemleak.h>
 #endif
 #include <net/secure_seq.h>
 
@@ -2793,6 +2794,15 @@ static struct rtable *ip_route_output_slow(struct net *net, struct flowi4 *fl4)
 		fl4->saddr = FIB_RES_PREFSRC(net, res);
 
 	dev_out = FIB_RES_DEV(res);
+
+	/* 2012-06-16 jewon.lee@lge.com LGP_DATA_KERNEL_BUGFIX_ROUTE [START] */
+	if (dev_out == NULL) {
+		printk(KERN_DEBUG "dev_out is null\n");
+		rth = ERR_PTR(-ENETUNREACH);
+		goto out;
+	}
+	/* 2012-06-16 jewon.lee@lge.com LGP_DATA_KERNEL_BUGFIX_ROUTE [END] */
+
 	fl4->flowi4_oif = dev_out->ifindex;
 
 
@@ -3478,7 +3488,7 @@ int __init ip_rt_init(void)
 	devinet_init();
 	ip_fib_init();
 
-	INIT_DELAYED_WORK_DEFERRABLE(&expires_work, rt_worker_func);
+	INIT_DEFERRABLE_WORK(&expires_work, rt_worker_func);
 	expires_ljiffies = jiffies;
 	schedule_delayed_work(&expires_work,
 		net_random() % ip_rt_gc_interval + ip_rt_gc_interval);
@@ -3508,3 +3518,4 @@ void __init ip_static_sysctl_init(void)
 	register_sysctl_paths(ipv4_path, ipv4_skeleton);
 }
 #endif
+

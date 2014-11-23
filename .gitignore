@@ -9,6 +9,9 @@
 #
 # Normal rules
 #
+dt.img
+*.porig
+*.dtb
 .*
 *.o
 *.o.*
@@ -55,6 +58,7 @@ modules.builtin
 #
 !.gitignore
 !.mailmap
+!.config
 
 #
 # Generated include files
@@ -81,6 +85,7 @@ GRTAGS
 GSYMS
 GTAGS
 
+*.rej
 *.orig
 *~
 \#*#

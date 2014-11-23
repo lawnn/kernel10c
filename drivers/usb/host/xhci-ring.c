@@ -1029,6 +1029,17 @@ static void update_ring_for_set_deq_completion(struct xhci_hcd *xhci,
 		ep_ring->dequeue = ep_ring->deq_seg->trbs;
 	}
 
+	/* If we get two back-to-back stalls, and the first stalled transfer
+	 * ends just before a link TRB, the dequeue pointer will be left on
+	 * the link TRB by the code in the while loop.  So we have to update
+	 * the dequeue pointer one segment further, or we'll jump off
+	 * the segment into la-la-land.
+	 */
+	if (last_trb(xhci, ep_ring, ep_ring->deq_seg, ep_ring->dequeue)) {
+		ep_ring->deq_seg = ep_ring->deq_seg->next;
+		ep_ring->dequeue = ep_ring->deq_seg->trbs;
+	}
+
 	while (ep_ring->dequeue != dev->eps[ep_index].queued_deq_ptr) {
 		/* We have more usable TRBs */
 		ep_ring->num_trbs_free++;
@@ -1597,7 +1608,7 @@ static void handle_device_notification(struct xhci_hcd *xhci,
 static void handle_port_status(struct xhci_hcd *xhci,
 		union xhci_trb *event)
 {
-	struct usb_hcd *hcd;
+	struct usb_hcd *hcd = NULL;
 	u32 port_id;
 	u32 temp, temp1;
 	int max_ports;
@@ -1651,6 +1662,8 @@ static void handle_port_status(struct xhci_hcd *xhci,
 	 */
 	/* Find the right roothub. */
 	hcd = xhci_to_hcd(xhci);
+	if (!hcd)
+		goto cleanup;
 	if ((major_revision == 0x03) != (hcd->speed == HCD_USB3))
 		hcd = xhci->shared_hcd;
 	bus_state = &xhci->bus_state[hcd_index(hcd)];
