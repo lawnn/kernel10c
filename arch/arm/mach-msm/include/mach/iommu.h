@@ -21,6 +21,8 @@
 
 extern pgprot_t     pgprot_kernel;
 extern struct bus_type msm_iommu_sec_bus_type;
+extern struct iommu_access_ops iommu_access_ops_v0;
+extern struct iommu_access_ops iommu_access_ops_v1;
 
 /* Domain attributes */
 #define MSM_IOMMU_DOMAIN_PT_CACHEABLE	0x1
@@ -144,8 +146,8 @@ struct iommu_access_ops {
 	int (*iommu_clk_on)(struct msm_iommu_drvdata *);
 	void (*iommu_clk_off)(struct msm_iommu_drvdata *);
 	void * (*iommu_lock_initialize)(void);
-	void (*iommu_lock_acquire)(void);
-	void (*iommu_lock_release)(void);
+	void (*iommu_lock_acquire)(unsigned int need_extra_lock);
+	void (*iommu_lock_release)(unsigned int need_extra_lock);
 };
 
 void msm_iommu_add_drv(struct msm_iommu_drvdata *drv);
@@ -229,6 +231,8 @@ struct remote_iommu_petersons_spinlock {
 void *msm_iommu_lock_initialize(void);
 void msm_iommu_mutex_lock(void);
 void msm_iommu_mutex_unlock(void);
+void msm_set_iommu_access_ops(struct iommu_access_ops *ops);
+struct iommu_access_ops *msm_get_iommu_access_ops(void);
 #else
 static inline void *msm_iommu_lock_initialize(void)
 {
@@ -236,19 +240,29 @@ static inline void *msm_iommu_lock_initialize(void)
 }
 static inline void msm_iommu_mutex_lock(void) { }
 static inline void msm_iommu_mutex_unlock(void) { }
+static inline void msm_set_iommu_access_ops(struct iommu_access_ops *ops)
+{
+
+}
+static inline struct iommu_access_ops *msm_get_iommu_access_ops(void)
+{
+	return NULL;
+}
 #endif
 
-#ifdef CONFIG_MSM_IOMMU_GPU_SYNC
-void msm_iommu_remote_p0_spin_lock(void);
-void msm_iommu_remote_p0_spin_unlock(void);
+#ifdef CONFIG_MSM_IOMMU_SYNC
+void msm_iommu_remote_p0_spin_lock(unsigned int need_lock);
+void msm_iommu_remote_p0_spin_unlock(unsigned int need_lock);
 
 #define msm_iommu_remote_lock_init() _msm_iommu_remote_spin_lock_init()
-#define msm_iommu_remote_spin_lock() msm_iommu_remote_p0_spin_lock()
-#define msm_iommu_remote_spin_unlock() msm_iommu_remote_p0_spin_unlock()
+#define msm_iommu_remote_spin_lock(need_lock) \
+				msm_iommu_remote_p0_spin_lock(need_lock)
+#define msm_iommu_remote_spin_unlock(need_lock) \
+				msm_iommu_remote_p0_spin_unlock(need_lock)
 #else
 #define msm_iommu_remote_lock_init()
-#define msm_iommu_remote_spin_lock()
-#define msm_iommu_remote_spin_unlock()
+#define msm_iommu_remote_spin_lock(need_lock)
+#define msm_iommu_remote_spin_unlock(need_lock)
 #endif
 
 /* Allows kgsl iommu driver to acquire lock */

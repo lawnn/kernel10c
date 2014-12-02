@@ -159,10 +159,10 @@ static void tz_wake(struct kgsl_device *device, struct kgsl_pwrscale *pwrscale)
 #ifdef CONFIG_MSM_KGSL_SIMPLE_GOV
 /* KGSL Simple GPU Governor */
 /* Copyright (c) 2011-2013, Paul Reioux (Faux123). All rights reserved. */
-static int default_laziness = 3;
+static int default_laziness = 7;
 module_param_named(simple_laziness, default_laziness, int, 0664);
 
-static int ramp_up_threshold = 7000;
+static int ramp_up_threshold = 3000;
 module_param_named(simple_ramp_threshold, ramp_up_threshold, int, 0664);
 
 static int laziness;
@@ -236,7 +236,12 @@ static void tz_idle(struct kgsl_device *device, struct kgsl_pwrscale *pwrscale)
 			{
 			idle = priv->bin.total_time - priv->bin.busy_time;
 			idle = (idle > 0) ? idle : 0;
-			val = simple_governor(device, idle);
+			if (priv->governor == TZ_GOVERNOR_SIMPLE)
+				val = simple_governor(device, idle);
+			else
+				val = __secure_tz_entry3(TZ_UPDATE_ID,
+				(pwr->active_pwrlevel + 1)/2,
+				priv->bin.total_time, priv->bin.busy_time);
 			}
 #else
 			val = __secure_tz_entry3(TZ_UPDATE_ID,

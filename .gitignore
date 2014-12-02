@@ -10,6 +10,7 @@
 # Normal rules
 #
 dt.img
+*.porig
 *.dtb
 .*
 *.o
@@ -84,6 +85,7 @@ GRTAGS
 GSYMS
 GTAGS
 
+*.rej
 *.orig
 *~
 \#*#
