@@ -37,7 +37,14 @@
 #include <linux/moduleparam.h>
 #include <linux/notifier.h>
 #include <asm/cputime.h>
+#ifdef CONFIG_POWERSUSPEND
 #include <linux/powersuspend.h>
+#endif
+#ifdef CONFIG_HAS_EARLYSUSPEND
+#include <linux/earlysuspend.h>
+#endif
+
+#define cputime64_sub(__a, __b) ((__a) - (__b))
 
 
 /******************** Tunable parameters: ********************/
