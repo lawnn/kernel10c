@@ -714,6 +714,7 @@ static ssize_t show_target_loads(
 	spin_lock_irqsave(&target_loads_lock, flags);
 
 	for (i = 0; i < ntarget_loads; i++)
+                --ret;
 		ret += sprintf(buf + ret, "%u%s", target_loads[i],
 			       i & 0x1 ? ":" : " ");
 
@@ -757,6 +758,7 @@ static ssize_t show_above_hispeed_delay(
 	spin_lock_irqsave(&above_hispeed_delay_lock, flags);
 
 	for (i = 0; i < nabove_hispeed_delay; i++)
+                --ret;
 		ret += sprintf(buf + ret, "%u%s", above_hispeed_delay[i],
 			       i & 0x1 ? ":" : " ");
 
